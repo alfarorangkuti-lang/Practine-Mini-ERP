@@ -1,18 +1,29 @@
 'use client'
 
+import { useAuth } from "@/app/hooks/auth";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
+    const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState([])
     const [password, setPassword] = useState("");
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
+    const [password_confirmation, setPasswordConfirmation] = useState("");
     const router = useRouter();
+    const { register } = useAuth({middleware:'guest', redirectIfAuthenticated:'/verify'})
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log({ email, name, password, passwordConfirmation });
+        setLoading(true)
+        register({
+            email, 
+            name, 
+            password, 
+            password_confirmation,
+            setErrors,
+        }).then(() => setLoading(false))
     };
 
     return (
@@ -25,7 +36,8 @@ export default function Register() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="text-gray-700 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    placeholder="Email"
+                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -37,7 +49,8 @@ export default function Register() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="text-gray-700 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    placeholder="Nama"
+                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -49,7 +62,8 @@ export default function Register() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="text-gray-700 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    placeholder="Password"
+                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -59,18 +73,21 @@ export default function Register() {
                 <label className="block text-sm mb-1 text-gray-700">Confirm Password</label>
                 <input
                     type="password"
-                    value={passwordConfirmation}
+                    value={password_confirmation}
                     onChange={(e) => setPasswordConfirmation(e.target.value)}
-                    className="text-gray-700 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    placeholder="Konfirmasi password"
+                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
-
+            {errors && (<span className="text-red-500 my-2">{errors.email }</span>)}
+            {errors && (<span className="text-red-500 my-2">{errors.password }</span>)}
             <button
                 type="submit"
-                className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90"
+                className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
+                disabled={loading}
             >
-                Register
+                {loading ? "Loading" : "Daftar" }
             </button>
             <a onClick={() => router.push('/login')} className="cursor-pointer underline text-gray-500 text-sm">Sudah punya akun?</a>
         </form>

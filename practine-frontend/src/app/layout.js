@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
       <SWRConfig
       value={{
         fetcher,
-        revalidateOnFocus: false,
+        revalidateOnFocus: true,
       }}
     >
       <body

@@ -38,7 +38,8 @@ export default function Login() {
                     type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring text-slate-600"
+                    placeholder="Email"
+                    className="w-full bg-gray-100 inset-shadow-sm shadow-sm rounded-lg px-3 py-2 focus:outline-none text-slate-600"
                     required
                 />
             </div>
@@ -49,7 +50,8 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring text-slate-600"
+                    placeholder="Password"
+                    className="w-full bg-gray-100 inset-shadow-sm shadow-sm rounded-lg px-3 py-2 focus:outline-none text-slate-600"
                     required
                 />
             </div>

@@ -21,6 +21,17 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
 
     const csrf = () => axiosClient.get('/sanctum/csrf-cookie')
 
+    const register = async({setErrors, ...props}) => {
+        await csrf();
+        setErrors([])
+        axiosClient.post('/register', props)
+        .then(() => mutate())
+        .catch(error => {
+            if (error.response.status !== 422) throw error
+            setErrors(error.response.data.errors)
+        })
+    }
+
     const login = async ({ setErrors, setStatus, ...props}) => {
         await csrf()
 
@@ -33,6 +44,13 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
         })
     }
 
+    const resendEmailVerification = ({ setStatus }) => {
+        axiosClient
+            .post('/email/verification-notification')
+            .then(response => setStatus(response.data.status))
+    }
+
+    
     const logout = async() => {
         await csrf()
         axiosClient.post('/logout')
@@ -54,9 +72,24 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
 
         if(middleware === 'auth' && !user)
             router.push('/login')
+
+        if(middleware === 'auth' && (user && !user.email_verified_at))
+            router.push('/verify')
+
+        if(middleware === 'guest' && (user && !user.email_verified_at))
+            router.push('/verify')
+
+        if (
+            window.location.pathname === '/verify' &&
+            user?.email_verified_at
+        )
+         router.push(redirectIfAuthenticated)
+
+        if (middleware === 'auth' && error) logout()
+
     }, [user, error])
 
     return {
-        user, login,logout
+        user,register ,login,resendEmailVerification,logout
     }
 }

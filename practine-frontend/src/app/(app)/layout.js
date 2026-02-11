@@ -8,7 +8,7 @@ import Image from "next/image"
 export default function LayoutApp({ children }) {
     const [collapsed, setCollapsed] = useState(false)
     const [active, setActive] = useState("dashboard")
-    const { logout } = useAuth()
+    const { logout } = useAuth({middleware: 'auth'})
 
     const menus = [
         { key: "dashboard", label: "Dashboard", icon: Home },
