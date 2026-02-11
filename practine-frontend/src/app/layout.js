@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SWRConfig } from "swr";
+import { fetcher } from "./lib/fetcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +21,18 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <SWRConfig
+      value={{
+        fetcher,
+        revalidateOnFocus: false,
+      }}
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
+      </SWRConfig>
     </html>
   );
 }
