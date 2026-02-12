@@ -13,9 +13,8 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
     axiosClient.get('api/user')
     .then(res => res.data)
     .catch(error => {
-        if (error.response.status !== 409) throw error
-        
-        router.push('/verify-email')
+        if (error.response.status !== 401) throw error
+        setErrors(error.response)
     }),    
     )
 
@@ -27,9 +26,16 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
         axiosClient.post('/register', props)
         .then(() => mutate())
         .catch(error => {
-            if (error.response.status !== 422) throw error
+            if (error.response.status !== 422 && error.response.status !== 401) throw error
             setErrors(error.response.data.errors)
         })
+    }
+
+    const getToken = async() =>{
+        await csrf()
+        const res = await axiosClient.get('/api/MidtransToken')
+        const token = await res;
+        return token.data.snap_token
     }
 
     const login = async ({ setErrors, setStatus, ...props}) => {
@@ -37,11 +43,17 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
 
         setErrors([])
         setStatus(null)
-
-        axiosClient.post('/login', props).then(() => mutate()).catch(error => { 
-            if (error.response.status !== 422) throw error
-            setErrors(error.response.data.errors)
-        })
+        try {
+            await axiosClient.post('/login', props)
+            await mutate()
+            return true
+        }
+        catch(error)  { 
+            if (error.response.status == 422){
+                setErrors(error.response.data.errors)
+                return false
+            }
+        }
     }
 
     const resendEmailVerification = ({ setStatus }) => {
@@ -53,15 +65,14 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
     
     const logout = async() => {
         await csrf()
-        axiosClient.post('/logout')
-        .then(() => {
-            mutate()
-            window.location.pathname = '/login'
 
-        })
-        .catch(error => {
+        try {
+            await axiosClient.post('/logout')
+            await mutate()
+            window.location.pathname = '/login'
+        } catch (error) {
             throw error
-        })
+        }
 
 
     }
@@ -71,17 +82,19 @@ export const useAuth = ({middleware, redirectIfAuthenticated} = {}) => {
             router.push(redirectIfAuthenticated)
 
         if (middleware === 'auth' && (user && !user.email_verified_at))
-            router.push('/verify-email')
+            router.push('/verify')
         
         if (
-            window.location.pathname === '/verify-email' &&
+            window.location.pathname === '/verify' &&
             user?.email_verified_at
         )
             router.push(redirectIfAuthenticated)
-        if (middleware === 'auth' && error) logout()
+        if (middleware === 'auth' && error) router.push('/login')
+           
+
     }, [user, error])
 
     return {
-        user,register ,login,resendEmailVerification,logout
+        user,register,getToken ,login,resendEmailVerification,logout
     }
 }

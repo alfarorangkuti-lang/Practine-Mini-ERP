@@ -37,7 +37,7 @@ export default function Register() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email"
-                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    className="bg-gray-100 text-gray-700 inset-shadow-sm shadow-sm w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -50,7 +50,7 @@ export default function Register() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Nama"
-                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    className="bg-gray-100 text-gray-700 inset-shadow-sm shadow-sm w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -63,7 +63,7 @@ export default function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    className="bg-gray-100 text-gray-700 inset-shadow-sm shadow-sm w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>
@@ -76,7 +76,7 @@ export default function Register() {
                     value={password_confirmation}
                     onChange={(e) => setPasswordConfirmation(e.target.value)}
                     placeholder="Konfirmasi password"
-                    className="bg-gray-100 text-gray-700 w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
+                    className="bg-gray-100 text-gray-700 inset-shadow-sm shadow-sm w-full rounded-lg px-3 py-2 focus:outline-none focus:ring"
                     required
                 />
             </div>

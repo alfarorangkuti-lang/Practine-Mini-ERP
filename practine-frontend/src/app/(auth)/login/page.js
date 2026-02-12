@@ -15,18 +15,20 @@ export default function Login() {
         middleware: 'guest',
         redirectIfAuthenticated: './dashboard',
     })
-
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        login({
+        await login({
             email,
             password,
             remember: false,
             setErrors,
             setStatus,
-        }).then(() => setLoading(false))
+        })
+        
+        if(errors) {setLoading(false)}
+
     };
 
     return (

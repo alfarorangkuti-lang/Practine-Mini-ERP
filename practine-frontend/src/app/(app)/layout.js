@@ -1,14 +1,22 @@
 'use client'
-
+import Spinner from "./components/spinner"
 import { useState } from "react"
 import { Menu, Home, Users, Settings, LogOut } from "lucide-react"
+import { useRouter } from 'next/navigation'
 import { useAuth } from "../hooks/auth"
 import Image from "next/image"
 
 export default function LayoutApp({ children }) {
     const [collapsed, setCollapsed] = useState(true)
     const [active, setActive] = useState("dashboard")
-    const { logout } = useAuth({middleware: 'auth'})
+    const { logout, user } = useAuth({middleware: 'auth'})
+    const [loading, setLoading] = useState(false)
+    const router = useRouter()
+
+    const handleLogout = async() => {
+        setLoading(true)
+        await logout()
+    }
 
     const menus = [
         { key: "dashboard", label: "Dashboard", icon: Home },
@@ -16,8 +24,13 @@ export default function LayoutApp({ children }) {
         { key: "settings", label: "Settings", icon: Settings },
     ]
 
+    if(user === undefined){
+        return 'loading';
+    }
+
     return (
         <div className="min-h-screen flex bg-gradient-to-br from-slate-100 to-slate-200">
+                    {<Spinner show={loading}/>}
 
             {/* SIDEBAR */}
             <aside
@@ -53,7 +66,7 @@ export default function LayoutApp({ children }) {
                 </div>
 
                 {/* MENU */}
-                <nav className="flex-1 p-4 space-y-4 mt-4">
+                <nav className="flex-1 p-4 space-y-1 mt-4">
                     {menus.map((menu) => {
                         const Icon = menu.icon
                         const isActive = active === menu.key
@@ -63,12 +76,12 @@ export default function LayoutApp({ children }) {
                                 key={menu.key}
                                 onClick={() => setActive(menu.key)}
                                 className={`
-                                group w-full flex ${collapsed && ('justify-center')} gap-3 py-3 px-3 rounded-md
+                                group w-full flex ${collapsed && ('justify-center')} gap-3 py-2.5 px-2 rounded-md
                                 transition-all duration-300 active:scale-95
                                 
                                 ${isActive
-                                        ? "bg-slate-200 text-black "
-                                        : "text-slate-600 hover:bg-slate-200"
+                                        ? "bg-slate-100 text-black border border-slate-200"
+                                        : "text-slate-600 hover:bg-slate-100 focus:none active:none border hover:border-slate-200 border-white/70"
                                     }
                             `}
                             >
@@ -86,7 +99,7 @@ export default function LayoutApp({ children }) {
 
                 {/* FOOTER USER */}
                 <div className="p-3 border-t border-slate-200/60">
-                    <button onClick={logout} className="w-full flex active:scale-95 border border-slate-200 justify-center gap-3 px-3 py-4 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-500 transition">
+                    <button onClick={handleLogout} className="w-full flex active:scale-95 border border-slate-200 justify-center gap-3 px-3 py-4 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-500 transition">
                         <LogOut size={20} />
                         {!collapsed && <span className="text-sm">Logout</span>}
                     </button>
@@ -116,7 +129,10 @@ export default function LayoutApp({ children }) {
                 {/* PAGE CONTENT */}
                 <main className="flex-1 p-6">
                     <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-sm border border-white/40">
+                    
+                    
                         {children}
+                        
                     </div>
                 </main>
 

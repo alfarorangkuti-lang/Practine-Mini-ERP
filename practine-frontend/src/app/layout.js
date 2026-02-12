@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
       value={{
         fetcher,
         revalidateOnFocus: true,
+        shouldRetryOnError: false
       }}
     >
       <body
